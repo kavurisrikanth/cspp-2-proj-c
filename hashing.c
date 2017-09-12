@@ -25,7 +25,7 @@ int* apply_hash_to_string(char *str, int words) {
 
   int i = 0, mod = 10007;
   int *hash = (int*)calloc(1, (words) * sizeof(int));
-  char *word, *temp;
+  char *word;
 
   word = strtok(str, " \0");
 

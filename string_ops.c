@@ -36,10 +36,12 @@ char** split_into_words(char *str, int words) {
   */
   char *temp,
        **ans = (char**)calloc(1, words * sizeof(char*));
+  int i = 0;
   temp = strtok(str, " \0");
   while(temp != NULL) {
-    *ans = (char*)calloc(1, (1 + strlen(temp)) * sizeof(char));
-    strcpy(*(ans), temp);
+    *(ans + i) = (char*)calloc(1, (1 + strlen(temp)) * sizeof(char));
+    strcpy(*(ans + i), temp);
+    i++;
     temp = strtok(NULL, " \0");
   }
 

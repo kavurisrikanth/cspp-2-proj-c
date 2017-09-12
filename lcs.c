@@ -28,7 +28,7 @@ int get_lcs_length(char *one, char* two) {
   if(strlen(one) == 0 || strlen(two) == 0)
     return 0;
 
-  int i = 0, j = 0, ans = 0,
+  int i = 0, ans = 0,
       len_one = strlen(one), len_two = strlen(two),
       words_one = num_words(one), words_two = num_words(two);
   char **hash_one, **hash_two;
@@ -47,8 +47,15 @@ int get_lcs_length(char *one, char* two) {
   free(temp);
   // ans = get_lcs_length(hash_one, words_one, hash_two, words_two);
 
-  // print_array(hash_one, words_one);
-  // print_array(hash_two, words_two);
+  // print first array of strings.
+  for(i = 0; i < words_one; i++)
+    printf("%s ", *(hash_one + i));
+  printf("\n");
+
+  // print second array of strings.
+  for(i = 0; i < words_two; i++)
+    printf("%s ", *(hash_two + i));
+  printf("\n");
 
   for(i = 0; i < words_one; i++)
     free(*(hash_one + i));
