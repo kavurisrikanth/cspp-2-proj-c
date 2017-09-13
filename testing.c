@@ -89,6 +89,7 @@ int main(int argc, char const *argv[]) {
 #endif
 
   float **bag = bag_driver(files, num_files);
+  float **lcs = lcs_driver(files, num_files);
 
   printf("\nBag of words:\n");
   printf(" files ");
@@ -104,11 +105,35 @@ int main(int argc, char const *argv[]) {
     printf("\n");
   }
 
+
+  printf("\nLongest Common Subsequence:\n");
+  printf(" files ");
+  for(i = 0; i < num_files; i++)
+    printf("%7d", i);
+  printf("\n");
+
+
+  for(i = 0; i < num_files; i++) {
+    printf("% 4d    ", i);
+    for(j = 0; j < num_files; j++)
+      printf("%7.3f ", lcs[i][j]);
+    printf("\n");
+  }
+
   for(i = 0; i < num_files; i++) {
     deallocate(*(bag + i));
     deallocate((files + i)->f_name);
     deallocate((files + i)->string);
     deallocate((files + i)->hash);
+
+    // printf("Deallocating words\n");
+    // for(j = 0; j < ((files + i)->num_words); j++) {
+    //   printf("%s\n", (*(files+i)).words[j]);
+    //   deallocate((*(files+i)).words[j]);
+    // }
+    // printf("half done\n");
+    deallocate((files+i)->words);
+    // printf("totally done\n");
   }
   deallocate(bag);
   deallocate(files);

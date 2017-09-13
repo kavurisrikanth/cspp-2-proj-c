@@ -6,6 +6,7 @@ typedef struct file_data {
   char *string;
   int *hash;
   int num_words;
+  char **words;
 } file_data;
 extern file_data *files;
 //blabla
