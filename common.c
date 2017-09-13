@@ -17,3 +17,14 @@ void print_string(char *str) {
     i++;
   }
 }
+
+void print_vector(int *arr, int len) {
+  int i = 0;
+  printf("\nCount vector:\n");
+  for(i = 0; i < len; i++) {
+    if(*(arr + i) > 0) {
+      printf("%d -> %d\n", i, *(arr + i));
+    }
+  }
+  printf("\n");
+}

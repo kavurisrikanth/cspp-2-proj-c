@@ -80,7 +80,7 @@ char* get_string_from_file(char* path) {
 	ans = (char*)allocate(init_ans);
 	temp = (char*)allocate(init_temp);
 
-	printf("Opening file %s...\n", path);
+	// printf("Opening file %s...\n", path);
 	FILE *fd = fopen(path, "r");
 
 	if(fd == NULL)
@@ -104,7 +104,7 @@ char* get_string_from_file(char* path) {
 	}
 
 	ans[strlen(ans) - 1] = '\0';
-	printf("Finally, ans: %d\n", init_ans);
+	// printf("Finally, ans: %d\n", init_ans);
 	deallocate(temp);
 	fclose(fd);
 	return ans;

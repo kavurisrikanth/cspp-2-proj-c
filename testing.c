@@ -6,14 +6,10 @@
  */
 
 #include "testing.h"
-#include "common.h"
 
-struct file_data {
-  char *f_name;
-  char *string;
-  int *hash;
-  int num_words;
-};
+extern int mod;
+
+
 
 int main(int argc, char const *argv[]) {
   /* code */
@@ -28,10 +24,10 @@ int main(int argc, char const *argv[]) {
        *abs_path = realpath((char*)argv[1], NULL),
        *str;
 
-  printf("path: %s\n", (char*)argv[1]);
-  printf("absolute path: %s\n", abs_path);
+  // printf("path: %s\n", (char*)argv[1]);
+  // printf("absolute path: %s\n", abs_path);
 
-  int num_files = 0, i = 0;
+  int num_files = 0, i = 0, j = 0;
   char **file_names = get_all_files_in_dir((char*)argv[1], &num_files);
   // char **strings = (char**)allocate((num_files) * sizeof(char*));
 
@@ -40,27 +36,30 @@ int main(int argc, char const *argv[]) {
   // Open the file, read its contents, degrammarify them, and arrange them
   // into a single string.
   for(i = 0; i < num_files; i++) {
-    str = strdup(abs_path);
+    str = (char*)allocate((1 + strlen(abs_path)) * sizeof(char));
+    strcpy(str, abs_path);
 
     temp = (char*)allocate((2 + strlen(str) + strlen(*(file_names + i))) * sizeof(char));
     strcpy(temp, strcat(strcat(str, "/"), *(file_names + i)));
-    printf("\n%s is a text file!\n", temp);
+    // printf("\n%s is a text file!\n", temp);
 
     (files + i)->f_name = (char*)allocate((1 + strlen(temp)) * sizeof(char));
     strcpy((files + i)->f_name, temp);
 
     (files + i)->string = degrammarify(get_string_from_file(temp));
-    printf("\nstrings: %s *** %s\n", (files + i)->string, degrammarify(get_string_from_file(temp)));
+    // printf("\nstrings: %s *** %s\n", (files + i)->string, degrammarify(get_string_from_file(temp)));
 
     (files + i)->num_words = num_words((files + i)->string);
     (files + i)->hash = apply_hash_to_string(strdup((files + i)->string), (files + i)->num_words);
-    printf("\n--------------strings: %s\n", (files + i)->string);
+    // printf("\n--------------strings: %s\n", (files + i)->string);
+
     deallocate(temp);
     deallocate(str);
-    printf("Dealloacted!\n");
+    // printf("Dealloacted!\n");
   }
 
   // For each string, do bag of words, LCS, and fingerprinting
+  /*
   printf("\n");
   for(i = 0; i < num_files; i++) {
     printf("File details:\n");
@@ -70,20 +69,48 @@ int main(int argc, char const *argv[]) {
     // print_string((files + i)->string);
     printf("Number of words: %d\n", (files + i)->num_words);
     printf("Hash: ");
-    print_array((files + i)->hash, (files + i)-> num_words);
+    print_vector((files + i)->hash, mod);
     printf("\n");
     // printf("string for file %d: %s\n", i, *(strings + i));
   }
+  */
+  // printf("\n\nword: %d, apple: %d, word: %d\n", apply_hash_to_word("word", mod),
+  //                                               apply_hash_to_word("apple", mod),
+  //                                               apply_hash_to_word("word", mod));
 
-  printf("\n\nword: %d, apple: %d, word: %d\n", apply_hash_to_word("word", 10007),
-                                            apply_hash_to_word("apple", 10007),
-                                            apply_hash_to_word("word", 10007));
+#if 0
+  float bag[num_files][num_files];
+  int j = 0;
+  for(i = 0; i < num_files; i++) {
+    for(j = 0; j < num_files; j++) {
+      bag[i][j] = get_dot_product((files + i)->hash, (files + j)->hash);
+    }
+  }
+#endif
+
+  float **bag = bag_driver(files, num_files);
+
+  printf("\nBag of words:\n");
+  printf(" files ");
+  for(i = 0; i < num_files; i++)
+    printf("%7d", i);
+  printf("\n");
+
 
   for(i = 0; i < num_files; i++) {
+    printf("% 4d    ", i);
+    for(j = 0; j < num_files; j++)
+      printf("%7.3f ", bag[i][j]);
+    printf("\n");
+  }
+
+  for(i = 0; i < num_files; i++) {
+    deallocate(*(bag + i));
     deallocate((files + i)->f_name);
     deallocate((files + i)->string);
     deallocate((files + i)->hash);
   }
+  deallocate(bag);
   deallocate(files);
   // deallocate(strings);
   // deallocate(str_one);

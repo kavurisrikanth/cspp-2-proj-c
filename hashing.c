@@ -4,6 +4,8 @@
 
 #include "hashing.h"
 
+int mod = 10007;
+
 int apply_hash_to_word(char *word, int mod) {
   /*
     Applies a hash function to word.
@@ -23,15 +25,15 @@ int* apply_hash_to_string(char *str, int words) {
     Applies a hash function to a string, one word at a time.
   */
 
-  int i = 0, mod = 10007;
-  int *hash = (int*)calloc(1, (words) * sizeof(int));
+  int i = 0;//, mod = 10007;
+  int *hash = (int*)calloc(1, (mod) * sizeof(int));
   char *word;
 
   word = strtok(str, " \0");
 
   while(word != NULL) {
 
-    *(hash + i) = apply_hash_to_word(word, mod);
+    *(hash + apply_hash_to_word(word, mod)) += 1;
     word = strtok(NULL, " \0");
     i++;
   }
