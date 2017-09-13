@@ -27,6 +27,7 @@ char* degrammarify(char *str) {
            }
     }
 
+    deallocate(str);
     return new_str;
 }
 

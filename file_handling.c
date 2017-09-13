@@ -7,11 +7,51 @@
 
 #include <stdio.h>
 // #include <conio.h>
+// #include <types.h>
+#include <dirent.h>
 #include "memory.h"
 
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
+
+char** get_all_files_in_dir(char *path, int *files_count) {
+	/*
+		For now, prints all the files in a given directory.
+	*/
+
+	DIR *dir;
+	struct dirent *d;
+	char *extn, **files = NULL;
+	int i = 0;
+
+	// To keep track of the number, since we're returning an array.
+	*files_count = 0;
+
+	dir = opendir(path);
+	if(dir) {
+		files = (char**)allocate(10 * sizeof(char*));
+		while((d = readdir(dir)) != NULL) {
+			// printf("%s\n", d->d_name);
+			extn = strchr(d->d_name, '.');
+			if(extn) {
+				// printf("extn: %s\n", extn);
+				if(strcmp(extn, ".txt") == 0) {
+					// printf("%s is a text file!\n", d->d_name);
+					// *(files + i) = (char*)allocate((1 + d->d_name) * sizeof(char));
+					*(files + i) = strdup(d->d_name);
+					i++;
+					(*files_count)++;
+				}
+			}
+		}
+		closedir(dir);
+	} else {
+		fprintf(stderr, "Invalid directory: %s\n", path);
+	}
+
+	return files;
+}
 
 FILE* create_log_file(char *path) {
 	/*
@@ -40,7 +80,7 @@ char* get_string_from_file(char* path) {
 	ans = (char*)allocate(init_ans);
 	temp = (char*)allocate(init_temp);
 
-	printf("Opening file...\n");
+	printf("Opening file %s...\n", path);
 	FILE *fd = fopen(path, "r");
 
 	if(fd == NULL)
@@ -63,6 +103,7 @@ char* get_string_from_file(char* path) {
 
 	}
 
+	ans[strlen(ans) - 1] = '\0';
 	printf("Finally, ans: %d\n", init_ans);
 	deallocate(temp);
 	fclose(fd);

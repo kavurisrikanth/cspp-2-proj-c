@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I. -Wall
+CFLAGS=-I. -Wall -g
 TARGET=testing
 OBJ = common.o file_handling.o hashing.o lcs.o memory.o string_ops.o testing.o
 
@@ -10,4 +10,4 @@ $(TARGET): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
 	
 clean:
-	\rm testing.exe *.o
+	\rm testing.exe *.o *.stackdump

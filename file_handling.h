@@ -6,11 +6,13 @@
  */
 
 #include <stdio.h>
+// #include <dirent.h>
 
 #ifndef FILE_HANDLING_H_
 #define FILE_HANDLING_H_
 
 FILE* create_log_file(char *path);
 char* get_string_from_file(char* path);
+char** get_all_files_in_dir(char *path, int *files_count);
 
 #endif /* FILE_HANDLING_H_ */

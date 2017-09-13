@@ -8,7 +8,7 @@ int apply_hash_to_word(char *word, int mod) {
   /*
     Applies a hash function to word.
   */
-  printf("Applying hash to: %s\n", word);
+  // printf("Applying hash to: %s\n", word);
   int i = 0, len = strlen(word), ans = 0;
 
   for(i = 0; i < len; i++) {
@@ -37,5 +37,6 @@ int* apply_hash_to_string(char *str, int words) {
   }
   // print_array()
 
+  deallocate(str);
   return hash;
 }
