@@ -28,8 +28,11 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
   char *one = file_one->string,
        *two = file_two->string;
 
+  if(one == NULL || two == NULL)
+    return -1;
+
   if(strlen(one) == 0 || strlen(two) == 0)
-    return 0;
+    return -1;
 
   int i = 0, j = 0, ans = 0, iter_one = 0, iter_two = 0,
       len_one = strlen(one), len_two = strlen(two),

@@ -24,8 +24,8 @@ void* resize(void* ptr, size_t old_size, size_t new_size) {
 }
 
 void deallocate(void *ptr) {
-	//if(ptr != NULL) {
+	if(ptr != NULL) {
 		free(ptr);
 		ptr = NULL;
-	//}
+	}
 }

@@ -112,6 +112,12 @@ char* get_string_from_file(char* path) {
 		// printf("%li\n", test - ans);
 	}
 	// printf("Finally, ans: %d\n", init_ans);
+	// printf("returning string: %sbla\n", ans);
+
+	if(strlen(ans) == 0) {
+		deallocate(ans);
+		ans = NULL;
+	}
 
 	deallocate(temp);
 	fclose(fd);

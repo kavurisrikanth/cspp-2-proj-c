@@ -38,7 +38,8 @@ float** bag_driver(struct file_data *files, int num_files) {
   for(i = 0; i < num_files; i++) {
     *(bag + i) = (float*)allocate(num_files * sizeof(float));
     for(j = 0; j < num_files; j++) {
-      if(i == j)
+      if((i == j) ||
+         ((files + i)->num_words == 0 || (files + j)->num_words == 0))
         *(*(bag + i) + j) = -1;
       else {
         // printf("comparing files: %s and %s\n", (files + i)->f_name, (files + j)->f_name);

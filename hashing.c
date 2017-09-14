@@ -33,6 +33,9 @@ int* apply_hash_to_word_list(char **word_list, int words) {
     Applies a hash function to a string, one word at a time.
   */
 
+  if(words == 0)
+    return NULL;
+
   int i = 0;
   unsigned long long pos = 0;//, mod = 10007;
   int *hash = (int*)allocate(mod * sizeof(int));

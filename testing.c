@@ -51,7 +51,7 @@ int main(int argc, char const *argv[]) {
     // printf("\nstrings: %s *** %s\n", (files + i)->string, degrammarify(get_string_from_file(temp)));
 
     (files + i)->num_words = num_words((files + i)->string);
-    (files + i)->words = split_into_words(strdup((files + i)->string), (files + i)->num_words);
+    (files + i)->words = split_into_words(duplicate_string((files + i)->string), (files + i)->num_words);
     // (files + i)->hash = apply_hash_to_string(strdup((files + i)->string), (files + i)->num_words);
     // printf("\n--------------strings: %s\n", (files + i)->string);
 
@@ -64,7 +64,8 @@ int main(int argc, char const *argv[]) {
   }
 
   // For each string, do bag of words, LCS, and fingerprinting
-  /*
+#if 1
+
   printf("\n");
   for(i = 0; i < num_files; i++) {
     printf("File details:\n");
@@ -73,12 +74,13 @@ int main(int argc, char const *argv[]) {
 
     // print_string((files + i)->string);
     printf("Number of words: %d\n", (files + i)->num_words);
-    printf("Hash: ");
-    print_vector((files + i)->hash, mod);
+    // printf("Hash: ");
+    // print_vector((files + i)->hash, mod);
     printf("\n");
     // printf("string for file %d: %s\n", i, *(strings + i));
   }
-  */
+
+#endif
   // printf("\n\nword: %d, apple: %d, word: %d\n", apply_hash_to_word("word", mod),
   //                                               apply_hash_to_word("apple", mod),
   //                                               apply_hash_to_word("word", mod));
@@ -108,9 +110,9 @@ int main(int argc, char const *argv[]) {
 
 
   for(i = 0; i < num_files; i++) {
-    printf("% 4d    ", i);
+    printf("% 6d    ", i);
     for(j = 0; j < num_files; j++)
-      printf("%7.3f ", bag[i][j]);
+      printf("%6.3f ", bag[i][j]);
     printf("\n");
   }
 
@@ -125,30 +127,33 @@ int main(int argc, char const *argv[]) {
 
 
   for(i = 0; i < num_files; i++) {
-    printf("% 4d    ", i);
+    printf("% 6d    ", i);
     for(j = 0; j < num_files; j++)
-      printf("%7.3f ", lcs[i][j]);
+      printf("%6.3f ", lcs[i][j]);
     printf("\n");
   }
 #endif
 
   for(i = 0; i < num_files; i++) {
     deallocate(*(bag + i));
+    deallocate(*(lcs + i));
+    
     deallocate((files + i)->f_name);
     deallocate((files + i)->string);
     deallocate((files + i)->hash);
+    
+    deallocate(*(file_names + i));
 
-    // printf("Deallocating words\n");
-    // for(j = 0; j < ((files + i)->num_words); j++) {
-    //   printf("%s\n", (*(files+i)).words[j]);
-    //   deallocate((*(files+i)).words[j]);
-    // }
-    // printf("half done\n");
+    for(j = 0; j < ((files + i)->num_words); j++) {
+      deallocate((*(files+i)).words[j]);
+    }
     deallocate((files+i)->words);
-    // printf("totally done\n");
   }
   deallocate(bag);
+  deallocate(lcs);
   deallocate(files);
+  deallocate(file_names);
+  deallocate(abs_path);
   // deallocate(strings);
   // deallocate(str_one);
   // deallocate(str_two);

@@ -6,3 +6,4 @@
 #include "bag_of_words.h"
 #include <stdio.h>
 #include "file_struct.h"
+#include "common.h"

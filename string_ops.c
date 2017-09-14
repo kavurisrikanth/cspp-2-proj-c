@@ -10,7 +10,12 @@ char* degrammarify(char *str) {
     // Removes all the punctuation from str, converts it to lowercase
     // and returns the new string.
 
-    char *new_str = allocate(strlen(str));
+    char *new_str = NULL;
+
+    if(str == NULL)
+      return new_str;
+
+    new_str = allocate(strlen(str));
     int i = 0, j = 0, l = strlen(str);
 
     // printf("string len: %d\n", l);
@@ -37,8 +42,11 @@ char** split_into_words(char *str, int words) {
     Splits a string into an array of words
   */
   // printf("\nreceived string: %s\n", str);
-  char **ans = (char**)calloc(1, words * sizeof(char*)),
-       c;
+
+  if(words == 0)
+    return NULL;
+
+  char **ans = (char**)allocate(words * sizeof(char*)), c;
   int i = 0, len = strlen(str), from = 0, j = 0;
 
 
@@ -88,7 +96,12 @@ int num_words(char *str) {
     Returns the number of words in the string.
   */
 
-  int ans = 0, i = 0, len = strlen(str);
+  int ans = 0;
+
+  if(str == NULL)
+    return ans;
+
+  int i = 0, len = strlen(str);
   for(i = 0; i <= len; i++) {
 
     // The final \0
@@ -97,4 +110,11 @@ int num_words(char *str) {
   }
 
   return ans;
+}
+
+char* duplicate_string(char *str) {
+  if(str == NULL)
+    return NULL;
+    
+  return strdup(str);
 }
