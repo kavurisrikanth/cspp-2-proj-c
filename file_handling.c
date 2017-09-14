@@ -10,6 +10,7 @@
 // #include <types.h>
 #include <dirent.h>
 #include "memory.h"
+#include "file_handling.h"
 
 #ifndef NULL
 #define NULL ((void *)0)
@@ -23,14 +24,14 @@ char** get_all_files_in_dir(char *path, int *files_count) {
 	DIR *dir;
 	struct dirent *d;
 	char *extn, **files = NULL;
-	int i = 0;
+	int i = 0, buffer = 10, capacity = 10;
 
 	// To keep track of the number, since we're returning an array.
 	*files_count = 0;
 
 	dir = opendir(path);
 	if(dir) {
-		files = (char**)allocate(10 * sizeof(char*));
+		files = (char**)allocate(capacity * sizeof(char*));
 		while((d = readdir(dir)) != NULL) {
 			// printf("%s\n", d->d_name);
 			extn = strchr(d->d_name, '.');
@@ -42,6 +43,12 @@ char** get_all_files_in_dir(char *path, int *files_count) {
 					*(files + i) = strdup(d->d_name);
 					i++;
 					(*files_count)++;
+					buffer--;
+					if(buffer <= 2) {
+						files = resize(files, capacity, capacity * 2);
+						capacity *= 2;
+						buffer = capacity - *files_count;
+					}
 				}
 			}
 		}
@@ -58,9 +65,23 @@ FILE* create_log_file(char *path) {
 	 * Creates a log file at path, and returns the file
 	 * descriptor.
 	 */
-
+	 
 	FILE *fd = NULL;
-	fd = fopen(path, "w");
+	fd = fopen(strcat(path, "/logfile.log"), "w");
+	
+#if 1
+	time_t current_time;
+    char* c_time_string;
+
+    /* Obtain current time. */
+    current_time = time(NULL);
+    
+    /* Convert to local time format. */
+    c_time_string = ctime(&current_time);
+    
+    /* Print to stdout. ctime() has already added a terminating newline character. */
+    fprintf(fd, "Logfile creation time: %s", c_time_string);
+#endif
 
 	return fd;
 }
@@ -103,7 +124,7 @@ char* get_string_from_file(char* path) {
 			init_ans *= 2;
 			space_left = init_ans - strlen(ans);
 		}
-
+		memset(temp, 0, init_temp * sizeof(char));
 	}
 
 	// printf("returning string before fuckery: %s\n", ans);

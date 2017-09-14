@@ -1,13 +1,27 @@
+/*
+  Implements the Bag of Words algorithm.
+*/
+
 #include "bag_of_words.h"
 
 extern int mod;
 
 float get_dot_product(int *hash_one, int *hash_two) {
+  /*
+    Calculates the dot product of two vectors, essentially.
+    Inputs: hash_one, int array
+            hash_two, int array
+    Returns: ans, float, result of dot product
+  */
+  
   int i = 0;
   float ans = 0, len_one = 0, len_two = 0;
 
   for(i = 0; i < mod; i++) {
+    // For each member of the hash,
 
+    // Calculate the hash lengths.
+    // Avoids an unnecessary extra iteration
     if(*(hash_one + i) != 0) {
       len_one += pow(*(hash_one + i), 2);
     }
@@ -15,20 +29,21 @@ float get_dot_product(int *hash_one, int *hash_two) {
       len_two += pow(*(hash_two + i), 2);
     }
 
+    // If both hashes are not zero, meaning the same word
+    // is present in both files, multiply their counts
+    // and add the result to the dot product.
     if((*(hash_one + i) != 0) && (*(hash_two + i) != 0)) {
-    // printf("multiplying: %d and %d, ", *(hash_one + i) ,*(hash_two + i));
       ans += ((*(hash_one + i)) * (*(hash_two + i)));
-      // printf("first: %d, second: %d\n", *(hash_one + i), *(hash_two + i));
-      // printf("dot prod: %f\n", ans);
     }
   }
-  // printf("\n");
+
+  // printf("len one: %f, len two: %f\n", len_one, len_two);
 
   len_one = pow(len_one, 0.5);
   len_two = pow(len_two, 0.5);
 
   // printf("len one: %f, len two: %f\n", len_one, len_two);
-  // printf("dot prod: %f\n\n", ans);
+
   return ans/(len_one * len_two);
 }
 

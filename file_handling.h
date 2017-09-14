@@ -6,6 +6,7 @@
  */
 
 #include <stdio.h>
+#include <time.h>
 // #include <dirent.h>
 
 #ifndef FILE_HANDLING_H_

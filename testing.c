@@ -14,6 +14,7 @@ extern int mod;
 int main(int argc, char const *argv[]) {
   /* code */
 
+  // Validation
   if(argc != 2) {
     fprintf(stderr, "Wrong number of args!\n");
     fprintf(stderr, "Usage: ./testing <directory>\n");
@@ -31,75 +32,76 @@ int main(int argc, char const *argv[]) {
   char **file_names = get_all_files_in_dir((char*)argv[1], &num_files);
   // char **strings = (char**)allocate((num_files) * sizeof(char*));
 
+  // Validation
+  if(num_files == 0) {
+    printf("No text files found at location: %s\n", abs_path);
+    deallocate(abs_path);
+    deallocate(file_names);
+    return 0;
+  }
+  
   struct file_data *files = (struct file_data *)allocate(num_files * sizeof(struct file_data));
 
   // Open the file, read its contents, degrammarify them, and arrange them
   // into a single string.
   for(i = 0; i < num_files; i++) {
+    
+    // Get the absolute path of the directory
     str = (char*)allocate((1 + strlen(abs_path)) * sizeof(char));
     strcpy(str, abs_path);
-
     temp = (char*)allocate((2 + strlen(str) + strlen(*(file_names + i))) * sizeof(char));
     strcpy(temp, strcat(strcat(str, "/"), *(file_names + i)));
-    // printf("\n%s is a text file!\n", temp);
 
+    // Record the name
     (files + i)->f_name = (char*)allocate((1 + strlen(temp)) * sizeof(char));
     strcpy((files + i)->f_name, temp);
 
+    // and the degrammarified string
     (files + i)->string = degrammarify(get_string_from_file(temp));
-    // printf("file string: %s\n", (files + i)->string);
-    // printf("\nstrings: %s *** %s\n", (files + i)->string, degrammarify(get_string_from_file(temp)));
-
+    
+    // and the words array
     (files + i)->num_words = num_words((files + i)->string);
     (files + i)->words = split_into_words(duplicate_string((files + i)->string), (files + i)->num_words);
-    // (files + i)->hash = apply_hash_to_string(strdup((files + i)->string), (files + i)->num_words);
-    // printf("\n--------------strings: %s\n", (files + i)->string);
 
-    // required later.
+    // convert the words into a hash.
+    // required for Bag of Words.
     (files + i)->hash = apply_hash_to_word_list((files + i)->words, (files + i)->num_words);
 
+    // Deallocate to avoid memory leaks
     deallocate(temp);
     deallocate(str);
-    // printf("Dealloacted!\n");
   }
 
-  // For each string, do bag of words, LCS, and fingerprinting
-#if 1
-
+  
+#if 0
+  // For each file, print out its details.
+  // For debugging.
   printf("\n");
   for(i = 0; i < num_files; i++) {
     printf("File details:\n");
     printf("File name: %s\n", (files + i)->f_name);
     printf("String: %s\n", (files + i)->string);
 
-    // print_string((files + i)->string);
     printf("Number of words: %d\n", (files + i)->num_words);
-    // printf("Hash: ");
-    // print_vector((files + i)->hash, mod);
     printf("\n");
-    // printf("string for file %d: %s\n", i, *(strings + i));
   }
 
 #endif
-  // printf("\n\nword: %d, apple: %d, word: %d\n", apply_hash_to_word("word", mod),
-  //                                               apply_hash_to_word("apple", mod),
-  //                                               apply_hash_to_word("word", mod));
 
-#if 0
-  float bag[num_files][num_files];
-  int j = 0;
-  for(i = 0; i < num_files; i++) {
-    for(j = 0; j < num_files; j++) {
-      bag[i][j] = get_dot_product((files + i)->hash, (files + j)->hash);
-    }
-  }
-#endif
+  FILE *logfile = create_log_file(abs_path);
 
+  // Print out file IDs and names for the user
   printf("\n\nFYI.\nfile # -> file name\n");
   for(i = 0; i < num_files; i++) {
     printf("%d -> %s\n", i, (files + i)->f_name);
   }
 
+  fprintf(logfile, "\n\nFYI.\nfile # -> file name\n");
+  for(i = 0; i < num_files; i++) {
+    fprintf(logfile, "%d -> %s\n", i, (files + i)->f_name);
+  }
+
+  // Bag of Words
   float **bag = bag_driver(files, num_files);
 
   printf("\nBag of words:\n");
@@ -107,6 +109,12 @@ int main(int argc, char const *argv[]) {
   for(i = 0; i < num_files; i++)
     printf("%7d", i);
   printf("\n");
+
+  fprintf(logfile, "\nBag of words:\n");
+  fprintf(logfile, " files ");
+  for(i = 0; i < num_files; i++)
+    fprintf(logfile, "%7d", i);
+  fprintf(logfile, "\n");
 
 
   for(i = 0; i < num_files; i++) {
@@ -116,7 +124,14 @@ int main(int argc, char const *argv[]) {
     printf("\n");
   }
 
-#if 1
+  for(i = 0; i < num_files; i++) {
+    fprintf(logfile, "% 6d    ", i);
+    for(j = 0; j < num_files; j++)
+      fprintf(logfile, "%6.3f ", bag[i][j]);
+    fprintf(logfile, "\n");
+  }
+
+  // LCS
   float **lcs = lcs_driver(files, num_files);
 
   printf("\nLongest Common Subsequence:\n");
@@ -125,6 +140,12 @@ int main(int argc, char const *argv[]) {
     printf("%7d", i);
   printf("\n");
 
+  fprintf(logfile, "\nLongest Common Subsequence:\n");
+  fprintf(logfile, " files ");
+  for(i = 0; i < num_files; i++)
+    fprintf(logfile, "%7d", i);
+  fprintf(logfile, "\n");
+  
 
   for(i = 0; i < num_files; i++) {
     printf("% 6d    ", i);
@@ -132,8 +153,15 @@ int main(int argc, char const *argv[]) {
       printf("%6.3f ", lcs[i][j]);
     printf("\n");
   }
-#endif
 
+  for(i = 0; i < num_files; i++) {
+    fprintf(logfile, "% 6d    ", i);
+    for(j = 0; j < num_files; j++)
+      fprintf(logfile, "%6.3f ", lcs[i][j]);
+    fprintf(logfile, "\n");
+  }
+
+  // Deallocate and return
   for(i = 0; i < num_files; i++) {
     deallocate(*(bag + i));
     deallocate(*(lcs + i));
@@ -154,53 +182,8 @@ int main(int argc, char const *argv[]) {
   deallocate(files);
   deallocate(file_names);
   deallocate(abs_path);
-  // deallocate(strings);
-  // deallocate(str_one);
-  // deallocate(str_two);
+
+  fclose(logfile);
 
   return 0;
 }
-
-
-#if 0
-int main(void) {
-
-	//int i = 0, size = 10, size_2 = 20;
-
-	int size = 10;
-	char *arr = (char*)allocate(size);
-
-	printf("File path...");
-	char* str = (char*)allocate(100);
-
-	str = strcpy(str, "/home/ubuntu/workspace/msit/cspp2/proj_c/abc.txt");
-
-	/*
-	for(i = 0; i < size; i++)
-		*(arr + i) = 10;
-
-	for(i = 0; i < size; i++)
-		printf("%d ", *(arr + i));
-	printf("\n");
-
-
-	arr = resize(arr, size, size_2);
-	for(i = 0; i < size_2; i++)
-		printf("%d ", *(arr + i));
-	printf("\n");
-	*/
-	printf("path: %s\n", str);
-	char* temp = get_string_from_file(str);
-	printf("string: %s\n", temp);
-
-	char* new_str = degrammarify(temp);
-	printf("modified string: %s\n", new_str);
-
-	deallocate(temp);
-	deallocate(new_str);
-	deallocate(str);
-	deallocate(arr);
-
-	return 0;
-}
-#endif

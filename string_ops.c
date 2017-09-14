@@ -102,10 +102,13 @@ int num_words(char *str) {
     return ans;
 
   int i = 0, len = strlen(str);
+  char c;
+  
   for(i = 0; i <= len; i++) {
-
+    c = *(str + i);
+    
     // The final \0
-    if(*(str + i) == '\0' || *(str + i) == ' ')
+    if(c == '\0' || c == ' ')
       ans++;
   }
 
