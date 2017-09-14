@@ -73,9 +73,9 @@ char* get_string_from_file(char* path) {
 	 * If the file doesn't exist, then returns NULL.
 	 */
 
-	char *ans = NULL, *temp = NULL;
-	int init_temp = 129, space_left = 1024,
-		init_ans = space_left;
+	char *ans = NULL, *temp = NULL, *test = NULL;
+	int init_temp = 255, space_left = 1024,
+			init_ans = space_left;
 
 	ans = (char*)allocate(init_ans);
 	temp = (char*)allocate(init_temp);
@@ -91,8 +91,11 @@ char* get_string_from_file(char* path) {
 	while(fgets(temp, init_temp, fd) != NULL) {
 		// printf("temp: %s\n", temp);
 
-		temp[strlen(temp) - 1] = ' ';
+		temp[strlen(temp)] = ' ';
+		temp[strlen(temp) + 1] = '\0';
+		// printf("adding \"%s\" to \"%s\"\n", temp, ans);
 		strcat(ans, (const char *)temp);
+		// printf("result is \"%s\"\n", ans);
 		space_left -= strlen(temp);
 		// printf("space left: %d\n", space_left);
 		if(space_left <= init_temp) {
@@ -103,8 +106,13 @@ char* get_string_from_file(char* path) {
 
 	}
 
-	ans[strlen(ans) - 1] = '\0';
+	// printf("returning string before fuckery: %s\n", ans);
+	if((test = strrchr(ans, ' ')) != NULL) {
+		*test = '\0';
+		// printf("%li\n", test - ans);
+	}
 	// printf("Finally, ans: %d\n", init_ans);
+
 	deallocate(temp);
 	fclose(fd);
 	return ans;

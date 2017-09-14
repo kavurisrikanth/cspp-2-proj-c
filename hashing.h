@@ -3,5 +3,5 @@
 #include <math.h>
 #include "memory.h"
 
-int apply_hash_to_word(char *word, int mod);
-int* apply_hash_to_string(char *str, int words);
+unsigned long long apply_hash_to_word(char *word, int mod);
+int* apply_hash_to_word_list(char **word_list, int words);

@@ -47,11 +47,16 @@ int main(int argc, char const *argv[]) {
     strcpy((files + i)->f_name, temp);
 
     (files + i)->string = degrammarify(get_string_from_file(temp));
+    // printf("file string: %s\n", (files + i)->string);
     // printf("\nstrings: %s *** %s\n", (files + i)->string, degrammarify(get_string_from_file(temp)));
 
     (files + i)->num_words = num_words((files + i)->string);
-    (files + i)->hash = apply_hash_to_string(strdup((files + i)->string), (files + i)->num_words);
+    (files + i)->words = split_into_words(strdup((files + i)->string), (files + i)->num_words);
+    // (files + i)->hash = apply_hash_to_string(strdup((files + i)->string), (files + i)->num_words);
     // printf("\n--------------strings: %s\n", (files + i)->string);
+
+    // required later.
+    (files + i)->hash = apply_hash_to_word_list((files + i)->words, (files + i)->num_words);
 
     deallocate(temp);
     deallocate(str);
@@ -88,8 +93,12 @@ int main(int argc, char const *argv[]) {
   }
 #endif
 
+  printf("\n\nFYI.\nfile # -> file name\n");
+  for(i = 0; i < num_files; i++) {
+    printf("%d -> %s\n", i, (files + i)->f_name);
+  }
+
   float **bag = bag_driver(files, num_files);
-  float **lcs = lcs_driver(files, num_files);
 
   printf("\nBag of words:\n");
   printf(" files ");
@@ -105,6 +114,8 @@ int main(int argc, char const *argv[]) {
     printf("\n");
   }
 
+#if 1
+  float **lcs = lcs_driver(files, num_files);
 
   printf("\nLongest Common Subsequence:\n");
   printf(" files ");
@@ -119,6 +130,7 @@ int main(int argc, char const *argv[]) {
       printf("%7.3f ", lcs[i][j]);
     printf("\n");
   }
+#endif
 
   for(i = 0; i < num_files; i++) {
     deallocate(*(bag + i));
