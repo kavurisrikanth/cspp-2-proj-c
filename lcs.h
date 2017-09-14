@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+// #include <stdlib.h>
 #include <math.h>
 #include "string_ops.h"
+#include "file_struct.h"
+#include "memory.h"
 
-int get_lcs_length(char *one, char* two);
+float get_lcs_length(struct file_data *one, struct file_data *two);
+float** lcs_driver(struct file_data *files, int num_files);
+
 
 // Unused code.
 #if 0
