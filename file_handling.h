@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 #include <time.h>
-// #include <dirent.h>
+#include <dirent.h>
 
 #ifndef FILE_HANDLING_H_
 #define FILE_HANDLING_H_

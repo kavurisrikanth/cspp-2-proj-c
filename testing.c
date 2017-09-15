@@ -7,6 +7,7 @@
 
 #include "testing.h"
 
+// Needed for hashing
 extern int mod;
 
 
@@ -23,18 +24,16 @@ int main(int argc, char const *argv[]) {
 
   char *temp,
        *abs_path = realpath((char*)argv[1], NULL),
-       *str;
-
-  // printf("path: %s\n", (char*)argv[1]);
-  // printf("absolute path: %s\n", abs_path);
+       *str,
+       *print = (char*)allocate(2048 * sizeof(char));
 
   int num_files = 0, i = 0, j = 0;
   char **file_names = get_all_files_in_dir((char*)argv[1], &num_files);
-  // char **strings = (char**)allocate((num_files) * sizeof(char*));
 
   // Validation
   if(num_files == 0) {
-    printf("No text files found at location: %s\n", abs_path);
+    if(file_names != NULL)
+      printf("No text files found at location: %s\n", abs_path);
     deallocate(abs_path);
     deallocate(file_names);
     return 0;
@@ -81,85 +80,79 @@ int main(int argc, char const *argv[]) {
     printf("File details:\n");
     printf("File name: %s\n", (files + i)->f_name);
     printf("String: %s\n", (files + i)->string);
-
     printf("Number of words: %d\n", (files + i)->num_words);
-    printf("\n");
+    printf("Words:\n");
+    for(j = 0; j < (files + i)->num_words; j++)
+      printf("%s ", (files + i)->words[j]);
+    printf("\n\n");
   }
 
 #endif
 
   FILE *logfile = create_log_file(abs_path);
 
-  // Print out file IDs and names for the user
-  printf("\n\nFYI.\nfile # -> file name\n");
-  for(i = 0; i < num_files; i++) {
-    printf("%d -> %s\n", i, (files + i)->f_name);
-  }
+  // temp = (char*)allocate(2048 * sizeof(char));
 
+  printf("\n\nFYI.\nfile # -> file name\n");
   fprintf(logfile, "\n\nFYI.\nfile # -> file name\n");
   for(i = 0; i < num_files; i++) {
+    printf("%d -> %s\n", i, (files + i)->f_name);
     fprintf(logfile, "%d -> %s\n", i, (files + i)->f_name);
   }
+
+
 
   // Bag of Words
   float **bag = bag_driver(files, num_files);
 
   printf("\nBag of words:\n");
-  printf(" files ");
-  for(i = 0; i < num_files; i++)
-    printf("%7d", i);
-  printf("\n");
-
   fprintf(logfile, "\nBag of words:\n");
+  printf(" files ");
   fprintf(logfile, " files ");
-  for(i = 0; i < num_files; i++)
+  for(i = 0; i < num_files; i++) {
+    printf("%7d", i);
     fprintf(logfile, "%7d", i);
+  }
+  printf("\n");
   fprintf(logfile, "\n");
-
 
   for(i = 0; i < num_files; i++) {
     printf("% 6d    ", i);
-    for(j = 0; j < num_files; j++)
-      printf("%6.3f ", bag[i][j]);
-    printf("\n");
-  }
-
-  for(i = 0; i < num_files; i++) {
     fprintf(logfile, "% 6d    ", i);
-    for(j = 0; j < num_files; j++)
-      fprintf(logfile, "%6.3f ", bag[i][j]);
+    for(j = 0; j < num_files; j++) {
+      printf("%6.2f ", bag[i][j]);
+      fprintf(logfile, "%6.2f ", bag[i][j]);
+    }
+    printf("\n");
     fprintf(logfile, "\n");
   }
+
 
   // LCS
   float **lcs = lcs_driver(files, num_files);
 
   printf("\nLongest Common Subsequence:\n");
-  printf(" files ");
-  for(i = 0; i < num_files; i++)
-    printf("%7d", i);
-  printf("\n");
-
   fprintf(logfile, "\nLongest Common Subsequence:\n");
+  printf(" files ");
   fprintf(logfile, " files ");
-  for(i = 0; i < num_files; i++)
+  for(i = 0; i < num_files; i++) {
+    printf("%7d", i);
     fprintf(logfile, "%7d", i);
+  }
+  printf("\n");
   fprintf(logfile, "\n");
-  
 
   for(i = 0; i < num_files; i++) {
     printf("% 6d    ", i);
-    for(j = 0; j < num_files; j++)
-      printf("%6.3f ", lcs[i][j]);
-    printf("\n");
-  }
-
-  for(i = 0; i < num_files; i++) {
     fprintf(logfile, "% 6d    ", i);
-    for(j = 0; j < num_files; j++)
-      fprintf(logfile, "%6.3f ", lcs[i][j]);
+    for(j = 0; j < num_files; j++) {
+      printf("%6.2f ", lcs[i][j]);
+      fprintf(logfile, "%6.2f ", lcs[i][j]);
+    }
+    printf("\n");
     fprintf(logfile, "\n");
   }
+
 
   // Deallocate and return
   for(i = 0; i < num_files; i++) {
@@ -182,6 +175,8 @@ int main(int argc, char const *argv[]) {
   deallocate(files);
   deallocate(file_names);
   deallocate(abs_path);
+  deallocate(print);
+  // deallocate(temp);
 
   fclose(logfile);
 

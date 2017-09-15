@@ -28,14 +28,16 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
   char *one = file_one->string,
        *two = file_two->string;
 
+#if 0
   if(one == NULL || two == NULL)
     return -1;
 
   if(strlen(one) == 0 || strlen(two) == 0)
     return -1;
+#endif
 
   int i = 0, j = 0, ans = 0, iter_one = 0, iter_two = 0,
-      len_one = strlen(one), len_two = strlen(two),
+      len_one = 0, len_two = 0,
       words_one = file_one->num_words, words_two = file_two->num_words;
   char **hash_one, **hash_two, *temp;
 
@@ -69,8 +71,21 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
   //   printf("%s ", *(hash_two + i));
   // printf("\n");
 
+  i = 0;
+  while(i < file_one->num_words) {
+    len_one += strlen((file_one)->words[i]);
+    i++;
+  }
+
+  i = 0;
+  while(i < file_two->num_words) {
+    len_two += strlen((file_two)->words[i]);
+    i++;
+  }
+
   int matches = 0, spaces = 0, total_len = 0;
 
+  i = 0;
   // look at each word in the first file
   while(i < file_one->num_words) {
     // for each word in the second file
@@ -179,6 +194,7 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
   free(hash_two);
   #endif
 
+  // printf("ans: %d, len one: %d, len_two: %d, returning %f\n", ans, len_one, len_two, (float)(ans * 2)/(len_one + len_two));
   return (float)(ans * 2)/(len_one + len_two);
 }
 
@@ -189,10 +205,11 @@ float** lcs_driver(struct file_data *files, int num_files) {
   for(i = 0; i < num_files; i++) {
     *(lcs + i) = (float*)allocate(num_files * sizeof(float));
     for(j = 0; j < num_files; j++) {
-      if(i == j)
+      if((i == j) ||
+         ((files + i)->string == NULL || (files + j)->string == NULL))
         *(*(lcs + i) + j) = -1;
       else
-        *(*(lcs + i) + j) = get_lcs_length((files + i), (files + j));
+        *(*(lcs + i) + j) = 100 * get_lcs_length((files + i), (files + j));
     }
   }
 

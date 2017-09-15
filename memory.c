@@ -10,6 +10,10 @@
 #include "memory.h"
 
 void* allocate(size_t size) {
+	/*
+	Wrapper function for memory allocation.
+	*/
+	
 	void* ptr = NULL;
 //	printf("size: %d\n", sizeof(ptr));
 	ptr = calloc(1, size * sizeof(ptr));
@@ -17,6 +21,12 @@ void* allocate(size_t size) {
 }
 
 void* resize(void* ptr, size_t old_size, size_t new_size) {
+	/*
+	Wrapper function for memory reallocation.
+	Rather than use realloc, which leaves newly allocated memory
+	as is, this function uses calloc and memcpy.
+	*/
+	
 	void *new_ptr = calloc(1, new_size * sizeof(ptr));
 	memcpy(new_ptr, ptr, old_size * sizeof(ptr));
 	free(ptr);
@@ -24,6 +34,10 @@ void* resize(void* ptr, size_t old_size, size_t new_size) {
 }
 
 void deallocate(void *ptr) {
+	/*
+	Wrapper function to free memory.
+	*/
+	
 	if(ptr != NULL) {
 		free(ptr);
 		ptr = NULL;

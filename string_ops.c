@@ -7,34 +7,34 @@ String operations for the plagiarism project.
 #include <stdio.h>
 
 char* degrammarify(char *str) {
-    // Removes all the punctuation from str, converts it to lowercase
-    // and returns the new string.
+  // Removes all the punctuation from str, converts it to lowercase
+  // and returns the new string.
 
-    char *new_str = NULL;
+  char *new_str = NULL;
 
-    if(str == NULL)
-      return new_str;
-
-    new_str = allocate(strlen(str));
-    int i = 0, j = 0, l = strlen(str);
-
-    // printf("string len: %d\n", l);
-
-    for(i = 0; i < l; i++) {
-        if((str[i] >= 'a' && str[i] <= 'z') ||
-           (str[i] >= 'A' && str[i] <= 'Z') || str[i] == ' ') {
-               if(str[i] != ' ') {
-                   new_str[j] = (char)(((int)str[i]) | 32);
-                //   printf("%c ", new_str[j]);
-               }
-               else
-                   new_str[j] = str[i];
-                j++;
-           }
-    }
-
-    deallocate(str);
+  if(str == NULL)
     return new_str;
+
+  new_str = allocate(strlen(str));
+  int i = 0, j = 0, l = strlen(str);
+
+  // printf("string len: %d\n", l);
+  
+  for(i = 0; i < l; i++) {
+    if((str[i] >= 'a' && str[i] <= 'z') ||
+       (str[i] >= 'A' && str[i] <= 'Z') || str[i] == ' ') {
+         if(str[i] != ' ') {
+           new_str[j] = (char)(((int)str[i]) | 32);
+           //   printf("%c ", new_str[j]);
+         }
+         else
+          new_str[j] = str[i];
+        j++;
+     }
+  }
+
+  deallocate(str);
+  return new_str;
 }
 
 char** split_into_words(char *str, int words) {
@@ -46,7 +46,10 @@ char** split_into_words(char *str, int words) {
   if(words == 0)
     return NULL;
 
-  char **ans = (char**)allocate(words * sizeof(char*)), c;
+  char **ans = (char**)allocate(words * sizeof(char*));
+  
+#if 0
+  char c;
   int i = 0, len = strlen(str), from = 0, j = 0;
 
 
@@ -70,6 +73,7 @@ char** split_into_words(char *str, int words) {
       j++;
     }
   }
+#endif
 
   // printf("String: %s\n", str);
   // printf("Word list: \n");
@@ -77,7 +81,10 @@ char** split_into_words(char *str, int words) {
   //   printf(" ^%s^ ", *(ans + i));
   // printf("\n");
 
-  #if 0
+#if 1
+  char *temp;
+  int i = 0;
+  
   temp = strtok(str, " \0");
   while(temp != NULL) {
     *(ans + i) = (char*)calloc(1, (1 + strlen(temp)) * sizeof(char));
@@ -85,7 +92,7 @@ char** split_into_words(char *str, int words) {
     i++;
     temp = strtok(NULL, " \0");
   }
-  #endif
+#endif
 
   deallocate(str);
   return ans;
@@ -102,14 +109,29 @@ int num_words(char *str) {
     return ans;
 
   int i = 0, len = strlen(str);
-  char c;
+  char c, d;
   
   for(i = 0; i <= len; i++) {
     c = *(str + i);
     
     // The final \0
-    if(c == '\0' || c == ' ')
-      ans++;
+    if(c == '\0') {
+      if(i > 0) {
+        d = *(str + i - 1);
+        if((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z') ||
+           (d >= '0' && d <= '9') || d == '_')
+          ans++;
+      }
+    }
+      
+    if(c == ' ') {
+      if(i > 0) {
+        d = *(str + i - 1);
+        if((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z') ||
+           (d >= '0' && d <= '9') || d == '_')
+          ans++;
+      }
+    }
   }
 
   return ans;

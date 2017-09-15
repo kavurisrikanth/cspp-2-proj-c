@@ -33,7 +33,7 @@ float get_dot_product(int *hash_one, int *hash_two) {
     // is present in both files, multiply their counts
     // and add the result to the dot product.
     if((*(hash_one + i) != 0) && (*(hash_two + i) != 0)) {
-      ans += ((*(hash_one + i)) * (*(hash_two + i)));
+      ans += 100 * ((*(hash_one + i)) * (*(hash_two + i)));
     }
   }
 

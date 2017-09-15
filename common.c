@@ -8,6 +8,7 @@ void print_array(int *arr, int len) {
   printf("\n");
 }
 
+#if 0
 void print_string(char *str) {
   int i = 0;
   char c;
@@ -28,3 +29,10 @@ void print_vector(int *arr, int len) {
   }
   printf("\n");
 }
+
+
+void print_and_log(char *str, FILE *fd) {
+  printf(str);
+  fprintf(fd, str);
+}
+#endif

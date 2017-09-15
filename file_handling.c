@@ -5,10 +5,7 @@
  *      Author: msit ksr
  */
 
-#include <stdio.h>
-// #include <conio.h>
-// #include <types.h>
-#include <dirent.h>
+
 #include "memory.h"
 #include "file_handling.h"
 
@@ -18,7 +15,8 @@
 
 char** get_all_files_in_dir(char *path, int *files_count) {
 	/*
-		For now, prints all the files in a given directory.
+		Scans the given directory, and returns the names of all
+		the text files in the directory.
 	*/
 
 	DIR *dir;
@@ -26,25 +24,29 @@ char** get_all_files_in_dir(char *path, int *files_count) {
 	char *extn, **files = NULL;
 	int i = 0, buffer = 10, capacity = 10;
 
-	// To keep track of the number, since we're returning an array.
+	// To keep track of the number, since we're returning
+	// an array of strings.
 	*files_count = 0;
 
 	dir = opendir(path);
 	if(dir) {
+		// Valid directory.
 		files = (char**)allocate(capacity * sizeof(char*));
 		while((d = readdir(dir)) != NULL) {
-			// printf("%s\n", d->d_name);
+			// Check file extension
 			extn = strchr(d->d_name, '.');
 			if(extn) {
-				// printf("extn: %s\n", extn);
+				// If there is an extension, check if it is .txt
 				if(strcmp(extn, ".txt") == 0) {
-					// printf("%s is a text file!\n", d->d_name);
-					// *(files + i) = (char*)allocate((1 + d->d_name) * sizeof(char));
+					// Text file, so include it.
+					// strdup means the memory will need to be
+					// deallocated.
 					*(files + i) = strdup(d->d_name);
 					i++;
 					(*files_count)++;
 					buffer--;
 					if(buffer <= 2) {
+						// A bit of memory resizing
 						files = resize(files, capacity, capacity * 2);
 						capacity *= 2;
 						buffer = capacity - *files_count;
@@ -69,19 +71,13 @@ FILE* create_log_file(char *path) {
 	FILE *fd = NULL;
 	fd = fopen(strcat(path, "/logfile.log"), "w");
 	
-#if 1
-	time_t current_time;
-    char* c_time_string;
+	// Printing current time in the log file.
+	time_t cur_time;
+    char* time_str;
 
-    /* Obtain current time. */
-    current_time = time(NULL);
-    
-    /* Convert to local time format. */
-    c_time_string = ctime(&current_time);
-    
-    /* Print to stdout. ctime() has already added a terminating newline character. */
-    fprintf(fd, "Logfile creation time: %s", c_time_string);
-#endif
+    cur_time = time(NULL);
+    time_str = ctime(&cur_time);
+    fprintf(fd, "Logfile creation time: %s", time_str);
 
 	return fd;
 }
@@ -95,45 +91,52 @@ char* get_string_from_file(char* path) {
 	 */
 
 	char *ans = NULL, *temp = NULL, *test = NULL;
+	
+	// Slightly arbitrary numbers to read line from file
 	int init_temp = 255, space_left = 1024,
 			init_ans = space_left;
 
+	// Allocate memory
 	ans = (char*)allocate(init_ans);
 	temp = (char*)allocate(init_temp);
 
-	// printf("Opening file %s...\n", path);
+	// Open file
 	FILE *fd = fopen(path, "r");
 
 	if(fd == NULL)
 		return ans;
 
-	// printf("File opened!\n");
-	// fscanf(fd, "%s", ans);
+	// Read each line
 	while(fgets(temp, init_temp, fd) != NULL) {
-		// printf("temp: %s\n", temp);
-
+		
+		// Removing the \n at the end and replacing it
+		// with a space, since we need the whole text in one
+		// string.
 		temp[strlen(temp)] = ' ';
 		temp[strlen(temp) + 1] = '\0';
-		// printf("adding \"%s\" to \"%s\"\n", temp, ans);
+
+		// Add to the single string
 		strcat(ans, (const char *)temp);
-		// printf("result is \"%s\"\n", ans);
+
+		// Keep track of space left in ans and adjust
+		// accordingly. ans does NOT shrink automatically.
 		space_left -= strlen(temp);
-		// printf("space left: %d\n", space_left);
 		if(space_left <= init_temp) {
 			ans = resize(ans, init_ans, 2 * init_ans);
 			init_ans *= 2;
 			space_left = init_ans - strlen(ans);
 		}
+		
+		// Reset temp.
 		memset(temp, 0, init_temp * sizeof(char));
 	}
 
-	// printf("returning string before fuckery: %s\n", ans);
+	// Take care of stray spaces.
 	if((test = strrchr(ans, ' ')) != NULL) {
 		*test = '\0';
-		// printf("%li\n", test - ans);
 	}
 	// printf("Finally, ans: %d\n", init_ans);
-	// printf("returning string: %sbla\n", ans);
+	// printf("returning string: %s\n", ans);
 
 	if(strlen(ans) == 0) {
 		deallocate(ans);
