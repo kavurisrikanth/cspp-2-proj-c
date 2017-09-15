@@ -1,6 +1,11 @@
+/*
+  Contains definitions for commonly used functions.
+*/
+
 #include "common.h"
 
 void print_array(int *arr, int len) {
+  // Prints an array
   int i = 0;
   printf("Array: ");
   for(i = 0; i < len; i++)
@@ -9,6 +14,7 @@ void print_array(int *arr, int len) {
 }
 
 #if 0
+// Unused code
 void print_string(char *str) {
   int i = 0;
   char c;

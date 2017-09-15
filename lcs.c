@@ -25,10 +25,11 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
     Returns the length of the longest common subsequence between two strings.
   */
 
+#if 0
+// Unused code
   char *one = file_one->string,
        *two = file_two->string;
-
-#if 0
+       
   if(one == NULL || two == NULL)
     return -1;
 
@@ -37,12 +38,17 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
 #endif
 
   int i = 0, j = 0, ans = 0, iter_one = 0, iter_two = 0,
-      len_one = 0, len_two = 0,
-      words_one = file_one->num_words, words_two = file_two->num_words;
+      len_one = 0, len_two = 0;
+
+#if 0      
+  // Unused code
+  int words_one = file_one->num_words,
+      words_two = file_two->num_words;
   char **hash_one, **hash_two, *temp;
 
-  // hash_one = apply_hash_to_string(one, words_one);
-  // hash_two = apply_hash_to_string(two, words_two);
+  hash_one = apply_hash_to_string(one, words_one);
+  hash_two = apply_hash_to_string(two, words_two);
+
 
   if(file_one->words == NULL) {
     temp = (char*)allocate((1 + len_one) * sizeof(char));
@@ -59,29 +65,26 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
     deallocate(temp);
     file_two->words = hash_two;
   }
-  // ans = get_lcs_length(hash_one, words_one, hash_two, words_two);
+#endif
 
-  // print first array of strings.
-  // for(i = 0; i < words_one; i++)
-  //   printf("%sbla ", *(hash_one + i));
-  // printf("\n");
-
-  // print second array of strings.
-  // for(i = 0; i < words_two; i++)
-  //   printf("%s ", *(hash_two + i));
-  // printf("\n");
-
+  // Calculate lengths of the file, meaning the sum of the
+  // lengths of each word
   i = 0;
   while(i < file_one->num_words) {
     len_one += strlen((file_one)->words[i]);
     i++;
   }
+  // Including spaces, since there's one space between
+  // two words
+  len_one += (file_one->num_words - 1);
 
   i = 0;
   while(i < file_two->num_words) {
     len_two += strlen((file_two)->words[i]);
     i++;
   }
+  len_two += (file_two->num_words - 1);
+
 
   int matches = 0, spaces = 0, total_len = 0;
 
@@ -90,36 +93,31 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
   while(i < file_one->num_words) {
     // for each word in the second file
     j = 0;
+
     while(j < file_two->num_words) {
       // if there is a match, then check the next words until there isn't
       // a match
-      // printf("comparing: \"%s\" at %d with \"%s\" at %d\n",
-      //              (*file_one).words[i], i,
-      //              (*file_two).words[j], j);
+
       if(strcmp((*file_one).words[i], (*file_two).words[j]) == 0) {
         matches = 1; // since one word has matched
+
         total_len += strlen((*file_two).words[j]);
         iter_one = i + 1;
         iter_two = j + 1;
+        
+        // Keep going until either the chain of consecutive
+        // matches is broken, or until we reach the end of
+        // one of the arrays
         while(iter_one < file_one->num_words &&
               iter_two < file_two->num_words &&
               (strcmp((*file_one).words[iter_one],
                      (*file_two).words[iter_two]) == 0)) {
 
-                // printf("matched: \"%s\" and \"%s\"\n", (*file_one).words[iter_one],
-                //              (*file_two).words[iter_two]);
-
-          // spaces++;
           matches++;
-          // printf("length of \"%s\": %lu\n", (*file_two).words[iter_two],
-          //                                strlen((*file_two).words[iter_two]));
           total_len += strlen((*file_two).words[iter_two]);
           iter_one++;
           iter_two++;
-          // printf("iters: %d, %d; limits: %d, %d\n", iter_one,
-          //         iter_two, file_one->num_words, file_two->num_words);
         }
-        // printf("Exited compare loop\n");
 
         // record changes
         spaces = matches - 1;
@@ -130,7 +128,6 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
         total_len = 0;
         spaces = 0;
 
-        // printf("after recording, ans = %d\n", ans);
       }
 
       // record changes
@@ -142,11 +139,9 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
       total_len = 0;
       spaces = 0;
 
-      // printf("after recording 2, ans = %d\n", ans);
       j++;
     }
 
-    // printf("j loop done\n");
     // record changes
     spaces = matches - 1;
     total_len += spaces;
@@ -156,16 +151,14 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
     total_len = 0;
     spaces = 0;
 
-    // printf("after recording 3, ans = %d\n", ans);
     i++;
   }
-  // printf("i loop done\n");
 
 #if 0
+  // Unused code
   for(i = 0; i < file_one->num_words; i++) {
     for(j = 0; j < file_two->num_words; j++) {
 
-      // printf("words: %s, %s\n", (*file_one).words[i], (*file_two).words[j]);
       // Compare word at i to each word in second list
       if(strcmp((*file_one).words[i], (*file_two).words[j]) == 0) {
         matches++;
@@ -183,8 +176,6 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
 
     }
   }
-#endif
-  #if 0
   for(i = 0; i < words_one; i++)
     free(*(hash_one + i));
   free(hash_one);
@@ -192,19 +183,29 @@ float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
   for(i = 0; i < words_two; i++)
     free(*(hash_two + i));
   free(hash_two);
-  #endif
+#endif
 
-  // printf("ans: %d, len one: %d, len_two: %d, returning %f\n", ans, len_one, len_two, (float)(ans * 2)/(len_one + len_two));
+  // Return
   return (float)(ans * 2)/(len_one + len_two);
 }
 
 float** lcs_driver(struct file_data *files, int num_files) {
+  /*
+    "Drives" the LCS algorithm
+  */
+  
+  // Allocate an array of arrays of floats
   int i = 0, j = 0;
   float **lcs = (float**)allocate(num_files * sizeof(float*));
 
   for(i = 0; i < num_files; i++) {
+    
+    // Allocate array of floats
     *(lcs + i) = (float*)allocate(num_files * sizeof(float));
     for(j = 0; j < num_files; j++) {
+      
+      // Setting the value to -1 if either it's the same file
+      // or an empty file
       if((i == j) ||
          ((files + i)->string == NULL || (files + j)->string == NULL))
         *(*(lcs + i) + j) = -1;

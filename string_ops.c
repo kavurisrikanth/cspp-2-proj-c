@@ -12,23 +12,34 @@ char* degrammarify(char *str) {
 
   char *new_str = NULL;
 
+  // Validation
   if(str == NULL)
     return new_str;
 
+  // Make a new string.
   new_str = allocate(strlen(str));
   int i = 0, j = 0, l = strlen(str);
+  char c;
 
-  // printf("string len: %d\n", l);
-  
   for(i = 0; i < l; i++) {
-    if((str[i] >= 'a' && str[i] <= 'z') ||
-       (str[i] >= 'A' && str[i] <= 'Z') || str[i] == ' ') {
-         if(str[i] != ' ') {
-           new_str[j] = (char)(((int)str[i]) | 32);
-           //   printf("%c ", new_str[j]);
+    
+    c = str[i];
+    
+    // If the character is a letter, a digit or a space,
+    // then consider it. Otherwise, ignore.
+    
+    if((c >= 'a' && c <= 'z') ||
+       (c >= 'A' && c <= 'Z') ||
+       (c >= '0' && c <= '9') ||
+       c == ' ' || c == '_') {
+         if(c >= 'A' && c <= 'Z') {
+           // Convert uppercase letters to lowercase
+           new_str[j] = (char)(((int)c) | 32);
          }
-         else
-          new_str[j] = str[i];
+         else {
+           // Leave everything else as is
+          new_str[j] = c;
+         }
         j++;
      }
   }
@@ -41,14 +52,16 @@ char** split_into_words(char *str, int words) {
   /*
     Splits a string into an array of words
   */
-  // printf("\nreceived string: %s\n", str);
 
+  // If there are no words, return NULL
   if(words == 0)
     return NULL;
 
   char **ans = (char**)allocate(words * sizeof(char*));
   
 #if 0
+  // Unused code.
+
   char c;
   int i = 0, len = strlen(str), from = 0, j = 0;
 
@@ -75,13 +88,11 @@ char** split_into_words(char *str, int words) {
   }
 #endif
 
-  // printf("String: %s\n", str);
-  // printf("Word list: \n");
-  // for(i = 0; i < words; i++)
-  //   printf(" ^%s^ ", *(ans + i));
-  // printf("\n");
 
 #if 1
+  // Split the string into pieces using strtok. This destroys
+  // the string, so send a duplicate of the string here.
+  
   char *temp;
   int i = 0;
   
@@ -94,6 +105,7 @@ char** split_into_words(char *str, int words) {
   }
 #endif
 
+  // Since the string is basically unusable, free it and return.
   deallocate(str);
   return ans;
 }
@@ -105,6 +117,7 @@ int num_words(char *str) {
 
   int ans = 0;
 
+  // Validation
   if(str == NULL)
     return ans;
 
@@ -112,10 +125,15 @@ int num_words(char *str) {
   char c, d;
   
   for(i = 0; i <= len; i++) {
+    
+    // For every character
     c = *(str + i);
     
-    // The final \0
-    if(c == '\0') {
+    // Check if it is a space or the \0 at the end.
+    // If it is, then check the character JUST before it.
+    // If that char is part of a valid word, then we just
+    // crossed a word. So count it.
+    if(c == '\0' || c == ' ') {
       if(i > 0) {
         d = *(str + i - 1);
         if((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z') ||
@@ -123,7 +141,8 @@ int num_words(char *str) {
           ans++;
       }
     }
-      
+
+#if 0
     if(c == ' ') {
       if(i > 0) {
         d = *(str + i - 1);
@@ -132,12 +151,17 @@ int num_words(char *str) {
           ans++;
       }
     }
+#endif
+    
   }
 
   return ans;
 }
 
 char* duplicate_string(char *str) {
+  /*
+  Wrapper function to duplicate string.
+  */
   if(str == NULL)
     return NULL;
     

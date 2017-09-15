@@ -66,6 +66,10 @@ int main(int argc, char const *argv[]) {
     // required for Bag of Words.
     (files + i)->hash = apply_hash_to_word_list((files + i)->words, (files + i)->num_words);
 
+    (files + i)->fp = NULL;
+    (files + i)->fp_len = 0;
+    (files + i)->kgram_len = 0;
+
     // Deallocate to avoid memory leaks
     deallocate(temp);
     deallocate(str);
@@ -91,8 +95,7 @@ int main(int argc, char const *argv[]) {
 
   FILE *logfile = create_log_file(abs_path);
 
-  // temp = (char*)allocate(2048 * sizeof(char));
-
+  // Printing to console and log file.
   printf("\n\nFYI.\nfile # -> file name\n");
   fprintf(logfile, "\n\nFYI.\nfile # -> file name\n");
   for(i = 0; i < num_files; i++) {
@@ -105,6 +108,7 @@ int main(int argc, char const *argv[]) {
   // Bag of Words
   float **bag = bag_driver(files, num_files);
 
+  // Printing to console and log file.
   printf("\nBag of words:\n");
   fprintf(logfile, "\nBag of words:\n");
   printf(" files ");
@@ -131,6 +135,7 @@ int main(int argc, char const *argv[]) {
   // LCS
   float **lcs = lcs_driver(files, num_files);
 
+  // Printing to console and log file.
   printf("\nLongest Common Subsequence:\n");
   fprintf(logfile, "\nLongest Common Subsequence:\n");
   printf(" files ");
@@ -153,11 +158,39 @@ int main(int argc, char const *argv[]) {
     fprintf(logfile, "\n");
   }
 
+  // Fingerprinting
+  float **fingers = fingerprint_driver(files, num_files);
+
+  // Printing to console and log file.
+  printf("\nFingerprinting:\n");
+  fprintf(logfile, "\nFingerprinting:\n");
+  printf(" files ");
+  fprintf(logfile, " files ");
+  for(i = 0; i < num_files; i++) {
+    printf("%7d", i);
+    fprintf(logfile, "%7d", i);
+  }
+  printf("\n");
+  fprintf(logfile, "\n");
+
+  for(i = 0; i < num_files; i++) {
+    printf("% 6d    ", i);
+    fprintf(logfile, "% 6d    ", i);
+    for(j = 0; j < num_files; j++) {
+      printf("%6.2f ", fingers[i][j]);
+      fprintf(logfile, "%6.2f ", fingers[i][j]);
+    }
+    printf("\n");
+    fprintf(logfile, "\n");
+  }
+
+
 
   // Deallocate and return
   for(i = 0; i < num_files; i++) {
     deallocate(*(bag + i));
     deallocate(*(lcs + i));
+    deallocate(*(fingers + i));
     
     deallocate((files + i)->f_name);
     deallocate((files + i)->string);
@@ -169,14 +202,15 @@ int main(int argc, char const *argv[]) {
       deallocate((*(files+i)).words[j]);
     }
     deallocate((files+i)->words);
+    deallocate((files + i)->fp);
   }
   deallocate(bag);
   deallocate(lcs);
+  deallocate(fingers);
   deallocate(files);
   deallocate(file_names);
   deallocate(abs_path);
   deallocate(print);
-  // deallocate(temp);
 
   fclose(logfile);
 

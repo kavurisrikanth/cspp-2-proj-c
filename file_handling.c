@@ -132,12 +132,16 @@ char* get_string_from_file(char* path) {
 	}
 
 	// Take care of stray spaces.
+	// Does not erase a word since we are inserting a space in
+	// the loop after every iteration.
+	// That space is deleted here.
 	if((test = strrchr(ans, ' ')) != NULL) {
 		*test = '\0';
 	}
 	// printf("Finally, ans: %d\n", init_ans);
 	// printf("returning string: %s\n", ans);
 
+	// Deallocate, close, and return
 	if(strlen(ans) == 0) {
 		deallocate(ans);
 		ans = NULL;
