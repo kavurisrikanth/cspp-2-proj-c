@@ -1,6 +1,8 @@
 /*
  * testing.c
  *
+ * This is the main file.
+ *
  *  Created on: Aug 29, 2017
  *      Author: msit ksr
  */
@@ -13,9 +15,9 @@ extern int mod;
 
 
 int main(int argc, char const *argv[]) {
-  /* code */
+  /* We start here */
 
-  // Validation
+  // Argument Validation
   if(argc != 2) {
     fprintf(stderr, "Wrong number of args!\n");
     fprintf(stderr, "Usage: ./testing <directory>\n");
@@ -39,6 +41,8 @@ int main(int argc, char const *argv[]) {
     return 0;
   }
   
+  // Structure to store file data.
+  // To make it at least look like OOP
   struct file_data *files = (struct file_data *)allocate(num_files * sizeof(struct file_data));
 
   // Open the file, read its contents, degrammarify them, and arrange them

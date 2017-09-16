@@ -1,3 +1,6 @@
+/*
+  Header file for LCS
+*/
 #include <stdio.h>
 #include <string.h>
 // #include <stdlib.h>
@@ -5,6 +8,9 @@
 #include "string_ops.h"
 #include "file_struct.h"
 #include "memory.h"
+
+#ifndef LCS_H
+#define LCS_H
 
 float get_lcs_length(struct file_data *one, struct file_data *two);
 float** lcs_driver(struct file_data *files, int num_files);
@@ -14,9 +20,6 @@ float** lcs_driver(struct file_data *files, int num_files);
 #if 0
 int get_lcs_length(int* one, int len_one, int* two, int len_two);
 #endif
-
-
-
 
 // Unused code.
 // This code returns the NUMBER of consecutive common words, not the
@@ -40,4 +43,6 @@ int get_lcs_length(int* one, int len_one, int* two, int len_two) {
 
   return ans;
 }
+#endif
+
 #endif

@@ -18,7 +18,6 @@
 
 #include "lcs.h"
 
-/* FUNCTION DECLARATIONS */
 
 float get_lcs_length(struct file_data *file_one, struct file_data *file_two) {
   /*

@@ -13,6 +13,8 @@ void print_array(int *arr, int len) {
   printf("\n");
 }
 
+
+
 #if 0
 // Unused code
 void print_string(char *str) {
